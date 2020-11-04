@@ -1,18 +1,17 @@
 import sqlite3
 
+""" Подключаемся к SQL """
+
 conn = sqlite3.connect("orders.db")
 cur = conn.cursor()
+
+""" Создаем базу данных """
 
 cur.execute("""CREATE TABLE IF NOT EXISTS notes(
     teg TEXT,
     note TEXT);
 """)
 conn.commit()
-
-notes = {"readme": "This is my first note"
-         }
-
-x = True
 
 
 def input_user():
@@ -21,10 +20,6 @@ def input_user():
 
 
 """ Функция которая возвращает пользователю итог ввода команды """
-
-
-class Controller:
-    pass
 
 
 def command_user():
@@ -46,7 +41,7 @@ def command_user():
 
 
 """ Данная функция сохраняет ввод
-    от пользователя в словарь notes """
+    от пользователя в базу данных """
 
 
 def add_notes():
@@ -113,6 +108,7 @@ def edit_notes():
         conn.commit()
         print(f"Заметка {notes_item} была изменена")
 
+x = True
 
 while x:
     input_user()

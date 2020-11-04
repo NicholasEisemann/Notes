@@ -1,4 +1,15 @@
-notes = {"First": "This is my first note"
+import sqlite3
+
+conn = sqlite3.connect("orders.db")
+cur = conn.cursor()
+
+cur.execute("""CREATE TABLE IF NOT EXISTS notes(
+    teg TEXT,
+    note TEXT);
+""")
+conn.commit()
+
+notes = {"readme": "This is my first note"
          }
 
 x = True
@@ -12,11 +23,13 @@ def input_user():
 """ Функция которая возвращает пользователю итог ввода команды """
 
 
+class Controller:
+    pass
+
+
 def command_user():
     if command.lower() == "add notes":
         add_notes()
-    elif command.lower() == "keys":
-        show_user_keys()
     elif command.lower() == "items":
         show_user_items()
     elif command.lower() == "help":
@@ -39,24 +52,18 @@ def command_user():
 def add_notes():
     teg = str(input("Введите тему: "))
     text = str(input("Введите текст заметки: "))
-    notes[teg] = text
+    com_orders = (teg, text)
+    cur.execute("INSERT INTO notes VALUES(?, ?);", com_orders)
+    conn.commit()
     print(f"Готово! Заметка с именем - {teg} сохранена!")
-
-
-""" Возвращает все ключи пользователю """
-
-
-def show_user_keys():
-    for y in notes.keys():
-        print(y)
 
 
 """ Возвращает полный список названия заметок с их текством """
 
 
 def show_user_items():
-    for item in notes.items():
-        print(item)
+    for value in cur.execute("SELECT * FROM notes;"):
+        print(value)
 
 
 """ Возвращает список всех доступных команд """
@@ -65,7 +72,6 @@ def show_user_items():
 def help_user():
     print("Command: \n"
           "add notes - Для добавления новой заметки\n"
-          "keys - Для просмотра полного списка ключей\n"
           "items - Для вывода всех заметок и их текста\n"
           "del - Для удаления заметки\n"
           "edit - Для редактирования текста заметки\n"
@@ -77,14 +83,17 @@ def help_user():
 
 def notes_del():
     key_item = str(input("Какую заметку вы хотите удалить? "))
-    if key_item in notes.keys():
-        del notes[key_item]
-        print(f"Заметка {key_item} удалена!")
-    elif key_item == "not del":
-        input_user()
+    if key_item == "not del":
+        print("Хорошо, возвращаюсь обратно...")
     else:
-        print("У вас нет такой заметки")
-        notes_del()
+        cur.execute(f"SELECT teg FROM notes WHERE teg = '{key_item}'")
+        if cur.fetchone() is None:
+            print("У вас нет такой заметки")
+            notes_del()
+        else:
+            cur.execute(f"DELETE FROM notes WHERE teg = '{key_item}'")
+            conn.commit()
+            print(f"Заметка - {key_item} была удалена")
 
 
 """ Функция редактирования заметки """
@@ -92,9 +101,16 @@ def notes_del():
 
 def edit_notes():
     notes_item = str(input("Какую заметку вы хотите редактировать? "))
-    if notes_item in notes.keys():
+    if notes_item == "not edit":
+        print("Хорошо, возвращаюсь обратно...")
+    cur.execute(f"SELECT teg FROM notes WHERE teg = '{notes_item}'")
+    if cur.fetchone() is None:
+        print("У вас нет такой заметки")
+        edit_notes()
+    else:
         edit_note = str(input("Введите текст: "))
-        notes[notes_item] = edit_note
+        cur.execute(f"UPDATE notes SET note = '{edit_note}' WHERE teg = '{notes_item}'")
+        conn.commit()
         print(f"Заметка {notes_item} была изменена")
 
 

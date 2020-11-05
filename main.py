@@ -16,21 +16,21 @@ conn.commit()
 
 def input_user():
     global command
-    command = input("Пожалуйста, введите команду: ")
+    command = input("\033[34mПожалуйста, введите команду: \033[0m")
 
 
 """ Функция которая возвращает пользователю итог ввода команды """
 
 
 def command_user():
-    if command.lower() == "add notes":
+    if command.lower() == "add":
         add_notes()
     elif command.lower() == "items":
         show_user_items()
     elif command.lower() == "help":
         help_user()
     elif command.lower() == "exit":
-        print("GoodBye!")
+        print("\033[36m\033[1mGoodBye!\033[0m")
     elif command.lower() == "del":
         notes_del()
     elif command.lower() == "edit":
@@ -45,12 +45,12 @@ def command_user():
 
 
 def add_notes():
-    teg = str(input("Введите тему: "))
-    text = str(input("Введите текст заметки: "))
+    teg = str(input("\033[34mВведите тему: \033[0m"))
+    text = str(input("\033[34mВведите текст заметки: \033[0m"))
     com_orders = (teg, text)
     cur.execute("INSERT INTO notes VALUES(?, ?);", com_orders)
     conn.commit()
-    print(f"Готово! Заметка с именем - {teg} сохранена!")
+    print(f"Готово! Заметка с именем - \033[32m{teg}\033[0m сохранена!")
 
 
 """ Возвращает полный список названия заметок с их текством """
@@ -66,7 +66,7 @@ def show_user_items():
 
 def help_user():
     print("Command: \n"
-          "add notes - Для добавления новой заметки\n"
+          "add - Для добавления новой заметки\n"
           "items - Для вывода всех заметок и их текста\n"
           "del - Для удаления заметки\n"
           "edit - Для редактирования текста заметки\n"
@@ -77,36 +77,36 @@ def help_user():
 
 
 def notes_del():
-    key_item = str(input("Какую заметку вы хотите удалить? "))
+    key_item = str(input("\033[34mКакую заметку вы хотите удалить? \033[0m"))
     if key_item == "not del":
-        print("Хорошо, возвращаюсь обратно...")
+        print("\033[35mХорошо, возвращаюсь обратно...\033[0m")
     else:
         cur.execute(f"SELECT teg FROM notes WHERE teg = '{key_item}'")
         if cur.fetchone() is None:
-            print("У вас нет такой заметки")
+            print("\033[31mУ вас нет такой заметки\033[0m")
             notes_del()
         else:
             cur.execute(f"DELETE FROM notes WHERE teg = '{key_item}'")
             conn.commit()
-            print(f"Заметка - {key_item} была удалена")
+            print(f"Заметка - \033[31m{key_item}\033[0m была удалена")
 
 
 """ Функция редактирования заметки """
 
 
 def edit_notes():
-    notes_item = str(input("Какую заметку вы хотите редактировать? "))
+    notes_item = str(input("\033[34mКакую заметку вы хотите редактировать? \033[0m"))
     if notes_item == "not edit":
-        print("Хорошо, возвращаюсь обратно...")
+        print("\033[35mХорошо, возвращаюсь обратно...\033[0m")
     cur.execute(f"SELECT teg FROM notes WHERE teg = '{notes_item}'")
     if cur.fetchone() is None:
-        print("У вас нет такой заметки")
+        print("\033[31mУ вас нет такой заметки\033[0m")
         edit_notes()
     else:
-        edit_note = str(input("Введите текст: "))
+        edit_note = str(input("\033[34mВведите текст: \033[0m"))
         cur.execute(f"UPDATE notes SET note = '{edit_note}' WHERE teg = '{notes_item}'")
         conn.commit()
-        print(f"Заметка {notes_item} была изменена")
+        print(f"Заметка \033[33m{notes_item}\033[0m была изменена")
 
 x = True
 

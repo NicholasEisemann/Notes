@@ -1,4 +1,6 @@
 import sqlite3
+from prettytable import from_db_cursor
+from datetime import datetime, date, time
 
 """ connecting to SQL """
 
@@ -8,6 +10,7 @@ cur = conn.cursor()
 """ creating database """
 
 cur.execute("""CREATE TABLE IF NOT EXISTS notes(
+    date DATETIME,
     title TEXT,
     note TEXT);
 """)
@@ -45,10 +48,11 @@ def command_user():
 
 
 def add_notes():
+    date = datetime.now()
     title = str(input("\033[34mInput title: \033[0m"))
     text = str(input("\033[34mIntup text note: \033[0m"))
-    com_orders = (title, text)
-    cur.execute("INSERT INTO notes VALUES(?, ?);", com_orders)
+    com_orders = (date, title, text)
+    cur.execute("INSERT INTO notes VALUES(?, ?, ?);", com_orders)
     conn.commit()
     print(f"Done! Title note - \033[32m{title}\033[0m saved!")
 
@@ -57,9 +61,9 @@ def add_notes():
 
 
 def show_user_items():
-    for value in cur.execute("SELECT * FROM notes;"):
-        print(value)
-
+    cur.execute("SELECT * FROM notes;")
+    my_table = from_db_cursor(cur)
+    print(my_table)
 
 """ Returns a list of all available commands """
 
